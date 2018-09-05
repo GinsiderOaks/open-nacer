@@ -56,9 +56,9 @@ public class PlayerController : MonoBehaviour, IHealth {
         }
 
         // Calculate and apply forces.
-        float tourque = -moveInput.x * turnSpeed * Time.deltaTime;
+        float tourque = -moveInput.x * turnSpeed * Time.fixedDeltaTime;
         rb.AddTorque (tourque);
-        float forwardForce = moveInput.y * moveSpeed * Time.deltaTime;
+        float forwardForce = moveInput.y * moveSpeed * Time.fixedDeltaTime;
         rb.AddForce (forwardForce * transform.right);
 
         // To ensure the player can't move too fast,
