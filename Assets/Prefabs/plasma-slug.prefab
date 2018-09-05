@@ -89,8 +89,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324e1f5373450ed42bd94a9a2f3bda43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 15
-  lifetime: 20
+  speed: 30
+  maxLifetime: 10
+  owner: {fileID: 0}
   damage: 20
 --- !u!212 &212799397462466726
 SpriteRenderer:

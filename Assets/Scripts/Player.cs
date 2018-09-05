@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour, IHealth {
+public class Player : SpaceCraft {
 
-    public float maxHealth = 100f;
     // Movement speed multiplier.
     [Range(0f, 400f)]
     public float moveSpeed = 160f;
@@ -22,23 +21,48 @@ public class PlayerController : MonoBehaviour, IHealth {
     // Drag increases proportionally to angularspeed. This is the proportionality constant.
     [Range (0f, .01f)]
     public float angularDragRate = .003f;
+    // The object responsible for shooting.
+    public Cannon cannon;
+    // The minimum amount of seconds between shots.
+    [Range(.1f, 5f)]
+    public float shotCoolDown;
 
     // The rigid body of the player.
     Rigidbody2D rb;
     // The animator of the player.
     Animator animator;
 
-    public float Health { get; private set; }
+    float _shotCoolDown;
+    bool canShoot;
 
-    void Start () {
+    public override void Start () {
         // Fetches components from player.
         rb = GetComponent<Rigidbody2D> ();
         animator = GetComponent<Animator> ();
 
-        Health = maxHealth;
+        _shotCoolDown = shotCoolDown;
+        base.Start ();
 	}
-	
-	void FixedUpdate () {
+
+    private void Update () {
+
+        if (_shotCoolDown >= shotCoolDown) {
+            _shotCoolDown = shotCoolDown;
+            canShoot = true;
+        }
+        else {
+            _shotCoolDown += Time.deltaTime;
+        }
+
+        bool shoot = Input.GetKey (KeyCode.Mouse0);
+        if (shoot & canShoot) {
+            canShoot = false;
+            _shotCoolDown = 0f;
+            cannon.Shoot (this);
+        }
+    }
+
+    void FixedUpdate () {
         // Gets input from player.
         Vector2 moveInput = GetMoveInput ();
         // As the player can't move backwards,
@@ -68,11 +92,12 @@ public class PlayerController : MonoBehaviour, IHealth {
         rb.angularDrag = Mathf.Abs(rb.angularVelocity) 
             * angularDragRate + angularDragMinimum;
 
+        /*
         Debug.Log (string.Format ("Velocity: {0}, Speed, {1}, Torque: {2}, Health: {3}.",
                    rb.velocity,
                    rb.velocity.magnitude,
                    rb.angularVelocity,
-                   Health));
+                   Health));*/
     }
 
     /// <summary>
@@ -90,16 +115,7 @@ public class PlayerController : MonoBehaviour, IHealth {
         return input;
     }
 
-    public void TakeDamage (float damage) {
-        Health = Health - damage;
-        Health = Mathf.Min (maxHealth, Health);
-
-        if (Health <= 0f) {
-            Die ();
-        }
-    }
-
-    public void Die() {
+    public override void Die() {
         print ("Player died.");
     }
 }
