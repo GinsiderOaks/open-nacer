@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour, IHealth {
 
+    public float maxHealth = 100f;
     // Movement speed multiplier.
     [Range(0f, 400f)]
     public float moveSpeed = 160f;
@@ -21,15 +22,20 @@ public class PlayerController : MonoBehaviour {
     // Drag increases proportionally to angularspeed. This is the proportionality constant.
     [Range (0f, .01f)]
     public float angularDragRate = .003f;
+
     // The rigid body of the player.
     Rigidbody2D rb;
     // The animator of the player.
     Animator animator;
 
-	void Start () {
+    public float Health { get; private set; }
+
+    void Start () {
         // Fetches components from player.
         rb = GetComponent<Rigidbody2D> ();
         animator = GetComponent<Animator> ();
+
+        Health = maxHealth;
 	}
 	
 	void FixedUpdate () {
@@ -62,10 +68,11 @@ public class PlayerController : MonoBehaviour {
         rb.angularDrag = Mathf.Abs(rb.angularVelocity) 
             * angularDragRate + angularDragMinimum;
 
-        Debug.Log (string.Format ("Velocity: {0}, Speed, {1}, Torque: {2}",
+        Debug.Log (string.Format ("Velocity: {0}, Speed, {1}, Torque: {2}, Health: {3}.",
                    rb.velocity,
                    rb.velocity.magnitude,
-                   rb.angularVelocity));
+                   rb.angularVelocity,
+                   Health));
     }
 
     /// <summary>
@@ -81,5 +88,18 @@ public class PlayerController : MonoBehaviour {
         };
 
         return input;
+    }
+
+    public void TakeDamage (float damage) {
+        Health = Health - damage;
+        Health = Mathf.Min (maxHealth, Health);
+
+        if (Health <= 0f) {
+            Die ();
+        }
+    }
+
+    public void Die() {
+        print ("Player died.");
     }
 }
