@@ -360,7 +360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1222338401}
-  smoothTime: 0.6
+  smoothTime: 0.3
 --- !u!1 &1222338401 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1437877316146408, guid: 3eb002efe0a502a47a1a0d95b91911c6,
